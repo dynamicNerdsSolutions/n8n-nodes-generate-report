@@ -1,11 +1,12 @@
-import { IExecuteFunctions } from 'n8n-core';
 import {
 	IDataObject,
 	INodeExecutionData,
 	INodePropertyOptions,
 	INodeType,
 	INodeTypeDescription,
+	NodeConnectionType,
 	NodeOperationError,
+	IExecuteFunctions
 } from 'n8n-workflow';
 
 import * as iconv from 'iconv-lite';
@@ -46,8 +47,8 @@ export class GenerateReport implements INodeType {
 		defaults: {
 			name: 'Generate Report',
 		},
-		inputs: ['main'],
-		outputs: ['main'],
+		inputs: [NodeConnectionType.Main],
+		outputs: [NodeConnectionType.Main],
 		properties: [
 			{
 				displayName: 'Template Key',
@@ -93,6 +94,40 @@ export class GenerateReport implements INodeType {
 				required: true,
 				description: 'Whether or not to convert the output file to PDF format',
 			},
+			{
+				displayName: 'Options',
+				name: 'options',
+				type: 'collection',
+				required: true,
+				default: {},
+				options: [
+					{
+						displayName: 'Tag Start Delimiters',
+						name: 'tagStart',
+						type: 'string',
+						default: '{{',
+						required: true,
+					},
+					{
+						displayName: 'Tag End Delimiters',
+						name: 'tagEnd',
+						type: 'string',
+						default: '}}',
+					},
+					{
+						displayName: 'Container Tag Open',
+						name: 'containerTagOpen',
+						type: 'string',
+						default: '#',
+					},
+					{
+						displayName: 'Container Tag Close',
+						name: 'containerTagClose',
+						type: 'string',
+						default: '/',
+					}
+				]
+			}
 		],
 	};
 
@@ -133,6 +168,11 @@ export class GenerateReport implements INodeType {
 			const data = this.getNodeParameter('data', itemIndex) as string;
 			const outputFileName = this.getNodeParameter('outputFileName', itemIndex) as string;
 			const convertToPDF = this.getNodeParameter('convertToPDF', itemIndex,false) as boolean;
+			const options = this.getNodeParameter('options', itemIndex) as IDataObject;
+			const tagStart = options.tagStart as string;
+			const tagEnd = options.tagEnd as string;
+			const containerTagOpen = options.containerTagOpen as string;
+			const containerTagClose = options.containerTagClose as string;
 			let templateData;
 			try{
 				templateData = flattenJSON(JSON.parse(data)) as TemplateData;
@@ -149,10 +189,10 @@ export class GenerateReport implements INodeType {
 
 			const handler = new TemplateHandler({
 				delimiters: {
-						tagStart: "{{",
-						tagEnd: "}}",
-						containerTagOpen: "#",
-						containerTagClose: "/"
+						tagStart: tagStart,
+						tagEnd: tagEnd,
+						containerTagOpen: containerTagOpen,
+						containerTagClose: containerTagClose
 				},
 			});
 
