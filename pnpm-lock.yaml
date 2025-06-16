@@ -9,41 +9,41 @@ importers:
   .:
     dependencies:
       easy-template-x:
-        specifier: ^6.2.1
-        version: 6.2.1
+        specifier: ^3.2.1
+        version: 3.2.1
       iconv-lite:
         specifier: ^0.6.3
         version: 0.6.3
       libreoffice-convert:
-        specifier: ^1.6.1
+        specifier: ^1.4.1
         version: 1.6.1
     devDependencies:
       '@types/express':
-        specifier: ^4.17.23
+        specifier: ^4.17.6
         version: 4.17.23
       '@types/request-promise-native':
-        specifier: ~1.0.21
+        specifier: ~1.0.15
         version: 1.0.21
       '@typescript-eslint/parser':
-        specifier: ~5.45.1
+        specifier: ~5.45
         version: 5.45.1(eslint@8.57.1)(typescript@4.8.4)
       eslint:
-        specifier: ^8.57.1
+        specifier: ^8.38.0
         version: 8.57.1
       eslint-plugin-n8n-nodes-base:
-        specifier: ^1.16.3
+        specifier: ^1.11.0
         version: 1.16.3(eslint@8.57.1)(typescript@4.8.4)
       gulp:
         specifier: ^4.0.2
         version: 4.0.2
       n8n-core:
-        specifier: ^1.14.1
+        specifier: '*'
         version: 1.14.1(n8n-nodes-base@1.14.1(asn1.js@5.4.1)(promise-ftp-common@1.1.5))
       n8n-workflow:
-        specifier: ^1.82.0
+        specifier: '*'
         version: 1.82.0
       prettier:
-        specifier: ^2.8.8
+        specifier: ^2.7.1
         version: 2.8.8
       typescript:
         specifier: ~4.8.4
@@ -837,9 +837,10 @@ packages:
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
 
-  '@xmldom/xmldom@0.8.10':
-    resolution: {integrity: sha512-2WALfTl4xo2SkGCYRt6rDTFfk9R1czmBvUQy12gK2KuRKIpWEhcbbzy8EZXtz/jkRqHX8bFEc6FC1HjX4TUWYw==}
+  '@xmldom/xmldom@0.8.7':
+    resolution: {integrity: sha512-sI1Ly2cODlWStkINzqGrZ8K6n+MTSbAeQnAipGyL+KZCXuHaRlj2gyyy8B/9MvsFFqN7XHryQnB2QwhzvJXovg==}
     engines: {node: '>=10.0.0'}
+    deprecated: this version has critical issues, please update to the latest version
 
   abort-controller@3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
@@ -1551,8 +1552,8 @@ packages:
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
 
-  easy-template-x@6.2.1:
-    resolution: {integrity: sha512-RBYhIlxl0z0Cd1vTYVh3AvMiFqYvSl1zAUnXk/Le0OHNTXgoyjiZlyFcyVmCj5SuWtElopj5AYbhW1B64SDpFw==}
+  easy-template-x@3.2.1:
+    resolution: {integrity: sha512-uB1R9qYB57HXDpzSS0FKwdgKZIs4iTqHcieSteDSKtz6R+mbaxhxsFdR7YhwvHR+u3VCxC2EpTKEnQh/DNdCfQ==}
 
   ecdsa-sig-formatter@1.0.11:
     resolution: {integrity: sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==}
@@ -2502,11 +2503,6 @@ packages:
 
   json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
-
-  json5@2.2.3:
-    resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
-    engines: {node: '>=6'}
-    hasBin: true
 
   jsonwebtoken@9.0.2:
     resolution: {integrity: sha512-PRp66vJ865SSqOlgqS8hujT5U4AOgMfhrwYIuIhfKaoSCZcirrmASQr8CX7cUg+RMih+hgznrjp99o+W4pJLHQ==}
@@ -5690,7 +5686,7 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@xmldom/xmldom@0.8.10': {}
+  '@xmldom/xmldom@0.8.7': {}
 
   abort-controller@3.0.0:
     dependencies:
@@ -5916,7 +5912,7 @@ snapshots:
   axios@1.8.2:
     dependencies:
       follow-redirects: 1.15.9
-      form-data: 4.0.0
+      form-data: 4.0.3
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
@@ -6531,10 +6527,9 @@ snapshots:
 
   eastasianwidth@0.2.0: {}
 
-  easy-template-x@6.2.1:
+  easy-template-x@3.2.1:
     dependencies:
-      '@xmldom/xmldom': 0.8.10
-      json5: 2.2.3
+      '@xmldom/xmldom': 0.8.7
       jszip: 3.10.1
       lodash.get: 4.4.2
 
@@ -7709,8 +7704,6 @@ snapshots:
   json-schema-traverse@0.4.1: {}
 
   json-stable-stringify-without-jsonify@1.0.1: {}
-
-  json5@2.2.3: {}
 
   jsonwebtoken@9.0.2:
     dependencies:
@@ -9140,7 +9133,7 @@ snapshots:
       jsonwebtoken: 9.0.2
       mime-types: 2.1.35
       mkdirp: 1.0.4
-      moment: 2.29.4
+      moment: 2.30.1
       moment-timezone: 0.5.48
       open: 7.4.2
       python-struct: 1.1.3

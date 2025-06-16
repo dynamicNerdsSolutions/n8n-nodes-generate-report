@@ -1,12 +1,11 @@
 import {
-	IDataObject,
 	INodeExecutionData,
-	INodePropertyOptions,
 	INodeType,
 	INodeTypeDescription,
 	NodeConnectionType,
 	NodeOperationError,
-	IExecuteFunctions
+	IExecuteFunctions,
+	IDataObject
 } from 'n8n-workflow';
 
 import * as iconv from 'iconv-lite';
@@ -17,24 +16,7 @@ import { TemplateData, TemplateHandler } from 'easy-template-x';
 const libre = require('libreoffice-convert');
 libre.convertAsync = require('util').promisify(libre.convert);
 
-// Create options for bomAware and encoding
-const bomAware: string[] = [];
-const encodeDecodeOptions: INodePropertyOptions[] = [];
-const encodings = (iconv as any).encodings; // tslint:disable-line:no-any
-Object.keys(encodings).forEach(encoding => {
-	if (!(encoding.startsWith('_') || typeof encodings[encoding] === 'string')) { // only encodings without direct alias or internals
-		if (encodings[encoding].bomAware) {
-			bomAware.push(encoding);
-		}
-		encodeDecodeOptions.push({ name: encoding, value: encoding });
-	}
-});
 
-encodeDecodeOptions.sort((a, b) => {
-	if (a.name < b.name) { return -1; }
-	if (a.name > b.name) { return 1; }
-	return 0;
-});
 
 export class GenerateReport implements INodeType {
 	description: INodeTypeDescription = {
@@ -87,26 +69,21 @@ export class GenerateReport implements INodeType {
 				description: 'File name of the output document, enter without extension',
 			},
 			{
-				displayName: 'Convert to PDF',
-				name: 'convertToPDF',
-				type: 'boolean',
-				default: false,
-				required: true,
-				description: 'Whether or not to convert the output file to PDF format',
-			},
-			{
-				displayName: 'Options',
-				name: 'options',
+				displayName: 'Tag Delimiters',
+				name: 'tagDelimiters',
 				type: 'collection',
-				required: true,
-				default: {},
+				default: {
+					tagStart: '{{',
+					tagEnd: '}}',
+					containerTagOpen: '#',
+					containerTagClose: '/'
+				},
 				options: [
 					{
 						displayName: 'Tag Start Delimiters',
 						name: 'tagStart',
 						type: 'string',
 						default: '{{',
-						required: true,
 					},
 					{
 						displayName: 'Tag End Delimiters',
@@ -133,22 +110,6 @@ export class GenerateReport implements INodeType {
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 
-		const flattenJSON = (obj = {} as IDataObject, res = {} as IDataObject, extraKey = '' as string) => {
-			for(var key in obj){
-			   if(typeof obj[key] !== 'object'){
-				  res[extraKey + key] = obj[key];
-			   }else{
-				  if(Array.isArray(obj[key])){
-					 res[extraKey + key] = obj[key];
-				  }
-				  else{
-					 flattenJSON(obj[key] as IDataObject, res, `${extraKey}${key}.`);
-				  }
-			   };
-			};
-			return res;
-		 };
-
 		const items = this.getInputData();
 
 		const returnData: INodeExecutionData[] = [];
@@ -167,15 +128,15 @@ export class GenerateReport implements INodeType {
 			const destinationKey = this.getNodeParameter('destinationKey', itemIndex) as string;
 			const data = this.getNodeParameter('data', itemIndex) as string;
 			const outputFileName = this.getNodeParameter('outputFileName', itemIndex) as string;
-			const convertToPDF = this.getNodeParameter('convertToPDF', itemIndex,false) as boolean;
-			const options = this.getNodeParameter('options', itemIndex) as IDataObject;
-			const tagStart = options.tagStart as string;
-			const tagEnd = options.tagEnd as string;
-			const containerTagOpen = options.containerTagOpen as string;
-			const containerTagClose = options.containerTagClose as string;
-			let templateData;
+			const tagDelimiters = this.getNodeParameter('tagDelimiters', itemIndex) as IDataObject;
+			this.logger.debug(JSON.stringify(tagDelimiters));
+			const tagStart = tagDelimiters.tagStart as string;
+			const tagEnd = tagDelimiters.tagEnd as string;
+			// const containerTagOpen = tagDelimiters.containerTagOpen as string;
+			// const containerTagClose = tagDelimiters.containerTagClose as string;
+			let templateData = {} as TemplateData;
 			try{
-				templateData = flattenJSON(JSON.parse(data)) as TemplateData;
+				templateData = JSON.parse(data) as TemplateData;
 			}
 			catch(err){
 				throw new NodeOperationError(this.getNode(), 'Something went wrong while parsing the template data.' + err as string);
@@ -191,8 +152,8 @@ export class GenerateReport implements INodeType {
 				delimiters: {
 						tagStart: tagStart,
 						tagEnd: tagEnd,
-						containerTagOpen: containerTagOpen,
-						containerTagClose: containerTagClose
+						containerTagOpen: "#",
+						containerTagClose: "/"
 				},
 			});
 
@@ -200,20 +161,9 @@ export class GenerateReport implements INodeType {
 
 				const doc = await handler.process(binaryDataBuffer, templateData);
 
-				if(convertToPDF){
-					let pdfBuf;
-					try{
-						pdfBuf = await libre.convertAsync(doc, '.pdf', undefined);
-					}
-					catch(err){
-						throw new NodeOperationError(this.getNode(),err as string)
-					}
 
-					newItem.binary![destinationKey] = await this.helpers.prepareBinaryData(pdfBuf, `${outputFileName}.pdf`);
-				}
-				else{
-					newItem.binary![destinationKey] = await this.helpers.prepareBinaryData(doc, `${outputFileName}.docx`);
-				}
+				newItem.binary![destinationKey] = await this.helpers.prepareBinaryData(doc, `${outputFileName}.docx`);
+
 
 			}
 			catch(err){
